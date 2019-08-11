@@ -2,14 +2,15 @@ package gpaxos
 
 import (
 	"bufio"
-	"dlog"
-	"genericsmr"
-	"genericsmrproto"
-	"gpaxosproto"
 	"log"
-	"state"
 	"sync"
 	"time"
+
+	"epaxos/src/dlog"
+	"epaxos/src/genericsmr"
+	"epaxos/src/genericsmrproto"
+	"epaxos/src/gpaxosproto"
+	"epaxos/src/state"
 )
 
 const CHAN_BUFFER_SIZE = 200000

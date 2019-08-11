@@ -1,16 +1,17 @@
 package mencius
 
 import (
-	"dlog"
 	"encoding/binary"
-	"fastrpc"
-	"genericsmr"
-	"genericsmrproto"
 	"io"
 	"log"
-	"menciusproto"
-	"state"
 	"time"
+
+	"epaxos/src/dlog"
+	"epaxos/src/fastrpc"
+	"epaxos/src/genericsmr"
+	"epaxos/src/genericsmrproto"
+	"epaxos/src/menciusproto"
+	"epaxos/src/state"
 )
 
 const CHAN_BUFFER_SIZE = 200000

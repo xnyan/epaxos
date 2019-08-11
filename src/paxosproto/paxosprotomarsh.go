@@ -3,10 +3,11 @@ package paxosproto
 import (
 	"bufio"
 	"encoding/binary"
-	"fastrpc"
 	"io"
-	"state"
 	"sync"
+
+	"epaxos/src/fastrpc"
+	"epaxos/src/state"
 )
 
 type byteReader interface {

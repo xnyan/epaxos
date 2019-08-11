@@ -1,19 +1,20 @@
 package epaxos
 
 import (
-	"bloomfilter"
-	"dlog"
 	"encoding/binary"
-	"epaxosproto"
-	"fastrpc"
-	"genericsmr"
-	"genericsmrproto"
 	"io"
 	"log"
 	"math"
-	"state"
 	"sync"
 	"time"
+
+	"epaxos/src/bloomfilter"
+	"epaxos/src/dlog"
+	"epaxos/src/epaxosproto"
+	"epaxos/src/fastrpc"
+	"epaxos/src/genericsmr"
+	"epaxos/src/genericsmrproto"
+	"epaxos/src/state"
 )
 
 const MAX_DEPTH_DEP = 10
@@ -704,8 +705,8 @@ func (r *Replica) updateConflicts(cmds []state.Command, replica int32, instance 
 				r.conflicts[replica][cmds[i].K] = instance
 			}
 		} else {
-            r.conflicts[replica][cmds[i].K] = instance
-        }
+			r.conflicts[replica][cmds[i].K] = instance
+		}
 		if s, present := r.maxSeqPerKey[cmds[i].K]; present {
 			if s < seq {
 				r.maxSeqPerKey[cmds[i].K] = seq
