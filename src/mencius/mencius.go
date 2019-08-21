@@ -81,12 +81,14 @@ type LeaderBookkeeping struct {
 	nacks          int
 }
 
-func NewReplica(id int, peerAddrList []string, thrifty bool, exec bool, dreply bool, durable bool) *Replica {
+func NewReplica(id int, peerAddrList []string, thrifty bool, exec bool, dreply bool, durable bool,
+	keyList []string, initVal string,
+) *Replica {
 	skippedTo := make([]int32, len(peerAddrList))
 	for i := 0; i < len(skippedTo); i++ {
 		skippedTo[i] = -1
 	}
-	r := &Replica{genericsmr.NewReplica(id, peerAddrList, thrifty, exec, dreply),
+	r := &Replica{genericsmr.NewReplica(id, peerAddrList, thrifty, exec, dreply, keyList, initVal),
 		make(chan fastrpc.Serializable, genericsmr.CHAN_BUFFER_SIZE*4),
 		make(chan fastrpc.Serializable, genericsmr.CHAN_BUFFER_SIZE),
 		make(chan fastrpc.Serializable, genericsmr.CHAN_BUFFER_SIZE),
@@ -467,7 +469,8 @@ func (r *Replica) handlePrepare(prepare *menciusproto.Prepare) {
 			-1,
 			FALSE,
 			0,
-			state.Command{state.NONE, 0, 0}})
+			state.Command{state.NONE, "", ""}})
+		//state.Command{state.NONE, 0, 0}})
 
 		r.instanceSpace[prepare.Instance] = &Instance{false,
 			0,
@@ -481,7 +484,8 @@ func (r *Replica) handlePrepare(prepare *menciusproto.Prepare) {
 			ok = FALSE
 		}
 		if inst.command == nil {
-			inst.command = &state.Command{state.NONE, 0, 0}
+			inst.command = &state.Command{state.NONE, "", ""}
+			//inst.command = &state.Command{state.NONE, 0, 0}
 		}
 		skipped := FALSE
 		if inst.skipped {
@@ -886,7 +890,8 @@ func (r *Replica) forceCommit() {
 		if r.instanceSpace[problemInstance] == nil {
 			r.instanceSpace[problemInstance] = &Instance{true,
 				NB_INST_TO_SKIP,
-				&state.Command{state.NONE, 0, 0},
+				&state.Command{state.NONE, "", ""},
+				//&state.Command{state.NONE, 0, 0},
 				r.makeUniqueBallot(1),
 				PREPARING,
 				&LeaderBookkeeping{nil, 0, 0, 0, 0}}

@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/rpc"
 	"runtime"
+	"strconv"
 	"time"
 
 	"epaxos/src/dlog"
@@ -66,11 +67,11 @@ func main() {
 	readers := make([]*bufio.Reader, N)
 	writers := make([]*bufio.Writer, N)
 
-	rarray = make([]int, *reqsNb / *rounds + *eps)    // a list of replica Id, one id per request
-	karray := make([]int64, *reqsNb / *rounds + *eps) // a list of keys, one key per request
-	put := make([]bool, *reqsNb / *rounds + *eps)     // if a request is a put operation
-	perReplicaCount := make([]int, N)                 // number of requests per replica
-	test := make([]int, *reqsNb / *rounds + *eps)
+	rarray = make([]int, *reqsNb / *rounds + *eps)     // a list of replica Id, one id per request
+	karray := make([]string, *reqsNb / *rounds + *eps) // a list of keys, one key per request
+	put := make([]bool, *reqsNb / *rounds + *eps)      // if a request is a put operation
+	perReplicaCount := make([]int, N)                  // number of requests per replica
+	//test := make([]int, *reqsNb / *rounds + *eps)
 	for i := 0; i < len(rarray); i++ {
 		r := rand.Intn(N)
 		rarray[i] = r
@@ -81,9 +82,11 @@ func main() {
 		if *conflicts >= 0 {
 			r = rand.Intn(100)
 			if r < *conflicts {
-				karray[i] = 42 // conflicting operations access the same key, but why 42?
+				//karray[i] = 42 // conflicting operations access the same key, but why 42?
+				karray[i] = strconv.Itoa(42) // conflicting operations access the same key, but why 42?
 			} else {
-				karray[i] = int64(43 + i) // non-conflicting ops access different keys
+				//karray[i] = int64(43 + i) // non-conflicting ops access different keys
+				karray[i] = strconv.Itoa(43 + i) // non-conflicting ops access different keys
 			}
 			r = rand.Intn(100)
 			if r < *writes {
@@ -92,8 +95,9 @@ func main() {
 				put[i] = false
 			}
 		} else {
-			karray[i] = int64(zipf.Uint64())
-			test[karray[i]]++
+			//karray[i] = int64(zipf.Uint64())
+			karray[i] = strconv.FormatInt(int64(zipf.Uint64()), 10)
+			//test[karray[i]]++
 		}
 	}
 	if *conflicts >= 0 {
@@ -127,7 +131,8 @@ func main() {
 
 	var id int32 = 0
 	done := make(chan bool, N)
-	args := genericsmrproto.Propose{id, state.Command{state.PUT, 0, 0}, 0}
+	//args := genericsmrproto.Propose{id, state.Command{state.PUT, 0, 0}, 0}
+	args := genericsmrproto.Propose{id, state.Command{state.PUT, "", ""}, 0}
 
 	before_total := time.Now()
 

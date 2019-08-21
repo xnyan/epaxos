@@ -18,11 +18,11 @@ const (
 	WLOCK
 )
 
-type Value int64
+type Value string
 
-const NIL Value = 0
+const NIL Value = ""
 
-type Key int64
+type Key string
 
 type Command struct {
 	Op Operation
@@ -36,7 +36,12 @@ type State struct {
 	//DB *leveldb.DB
 }
 
-func InitState() *State {
+func InitState(keyList []string, initVal string) *State {
+	kv := make(map[Key]Value)
+	for _, k := range keyList {
+		kv[Key(k)] = Value(initVal)
+	}
+	return &State{new(sync.Mutex), kv}
 	/*
 	   d, err := leveldb.Open("/Users/iulian/git/epaxos-batching/dpaxos/bin/db", nil)
 
@@ -47,7 +52,7 @@ func InitState() *State {
 	   return &State{d}
 	*/
 
-	return &State{new(sync.Mutex), make(map[Key]Value)}
+	//return &State{new(sync.Mutex), make(map[Key]Value)}
 }
 
 func Conflict(gamma *Command, delta *Command) bool {

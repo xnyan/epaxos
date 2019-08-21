@@ -75,8 +75,10 @@ type LeaderBookkeeping struct {
 	cstructs      [][]int32
 }
 
-func NewReplica(id int, peerAddrList []string, thrifty bool, exec bool, dreply bool) *Replica {
-	r := &Replica{genericsmr.NewReplica(id, peerAddrList, thrifty, exec, dreply),
+func NewReplica(id int, peerAddrList []string, thrifty bool, exec bool, dreply bool,
+	keyList []string, initVal string,
+) *Replica {
+	r := &Replica{genericsmr.NewReplica(id, peerAddrList, thrifty, exec, dreply, keyList, initVal),
 		make(chan *gpaxosproto.Prepare, CHAN_BUFFER_SIZE),
 		make(chan *gpaxosproto.M_1a, CHAN_BUFFER_SIZE),
 		make(chan *gpaxosproto.M_1b, CHAN_BUFFER_SIZE),
@@ -156,7 +158,8 @@ func (r *Replica) handleReplicaConnection(rid int, reader *bufio.Reader) error {
 				cmd.Unmarshal(reader)
 				r.commandsMutex.Lock()
 				if _, present := r.commands[cid]; !present {
-					if cmd.Op != 0 || cmd.K != 0 || cmd.V != 0 {
+					//if cmd.Op != 0 || cmd.K != 0 || cmd.V != 0 {
+					if cmd.Op != 0 || cmd.K != "" || cmd.V != "" {
 						r.commands[cid] = cmd
 					}
 				}
@@ -219,7 +222,8 @@ func (r *Replica) replyPrepare(reply *gpaxosproto.PrepareReply, w *bufio.Writer)
 func (r *Replica) send1b(msg *gpaxosproto.M_1b, w *bufio.Writer) {
 	w.WriteByte(gpaxosproto.M1B)
 	msg.Marshal(w)
-	dummy := state.Command{0, 0, 0}
+	//dummy := state.Command{0, 0, 0}
+	dummy := state.Command{0, "", ""}
 	for _, cid := range msg.Cstruct {
 		if cmd, present := r.commands[cid]; present {
 			cmd.Marshal(w)

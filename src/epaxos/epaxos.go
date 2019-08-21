@@ -119,9 +119,11 @@ type LeaderBookkeeping struct {
 	tpaOKs            int
 }
 
-func NewReplica(id int, peerAddrList []string, thrifty bool, exec bool, dreply bool, beacon bool, durable bool) *Replica {
+func NewReplica(id int, peerAddrList []string, thrifty bool, exec bool, dreply bool, beacon bool, durable bool,
+	keyList []string, initVal string,
+) *Replica {
 	r := &Replica{
-		genericsmr.NewReplica(id, peerAddrList, thrifty, exec, dreply),
+		genericsmr.NewReplica(id, peerAddrList, thrifty, exec, dreply, keyList, initVal),
 		make(chan fastrpc.Serializable, genericsmr.CHAN_BUFFER_SIZE),
 		make(chan fastrpc.Serializable, genericsmr.CHAN_BUFFER_SIZE),
 		make(chan fastrpc.Serializable, genericsmr.CHAN_BUFFER_SIZE),
@@ -779,6 +781,7 @@ func equal(deps1 *[DS]int32, deps2 *[DS]int32) bool {
 	return true
 }
 
+/*
 func bfFromCommands(cmds []state.Command) *bloomfilter.Bloomfilter {
 	if cmds == nil {
 		return nil
@@ -792,6 +795,7 @@ func bfFromCommands(cmds []state.Command) *bloomfilter.Bloomfilter {
 
 	return bf
 }
+*/
 
 /**********************************************************************
 
